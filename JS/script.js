@@ -8,6 +8,8 @@ const addBtn = document.querySelector('.add-button');
 const taskInput = document.querySelector('.add-input');
 const form = document.querySelector('.add-task');
 const removeBtn = document.querySelectorAll('.delete');
+const itemWrapper = document.querySelectorAll('.todo-wrapper');
+
 
 
 // GET DATA
@@ -20,13 +22,14 @@ const getData = async () => {
             }
         });
         const data = await response.json();
-        console.log(data);
+        //console.log(data);
         return data;
     } catch(error) {
         console.log(error);
     };
 };
 //getData();
+
 
 // POST DATA
 const postData = async (descriptionString) => {
@@ -49,24 +52,52 @@ const postData = async (descriptionString) => {
     };
 };
 
-//GET ID
-const getID = async () => {
-    const allTasks = await getData();
-    allTasks.forEach(singleTask => {
-        const taskId = singleTask._id;
-        console.log(taskId);    
+// GET ARRAY WITH ID'S
+const getIdArray = async () => {
+    const data = await getData();
+    const arrayList = data.map((arrayItem) => {
+        //console.log(arrayItem._id);
+        //const taskId = arrayItem._id;
+        //const urlDelete = `${urlToDo}${taskId}`;
+        //console.log(urlDelete);
+        return arrayItem._id;
     });
+    //console.log(arrayList);
+    return arrayList;
+};
+getIdArray();
+
+// GET ARRAY WITH URLS
+const getUrlArray = async () => {
+    const ids = await getIdArray();
+    const urlArray = ids.map((singleUrl) => {
+        return urlToDo + singleUrl;
+    });
+    console.log(urlArray);
+    return urlArray;
 }
-getID();
-
-
-
+getUrlArray();
 
 // DELETE DATA
 const deleteData = async () => {
     try {
-        const urlDelete = urlToDo + getID();
-        const response = await fetch(urlDelete, {
+        const allTasks = await getData();
+
+        allTasks.forEach(singleTask => {
+            
+            const taskId = singleTask._id;
+            //console.log(taskId);
+            const urlDelete = `${urlToDo}${taskId}`;
+            const urlObject = {urlDelete};
+            //const urlDelete = `${urlToDo}f383f2b-a3e7-4d1f-8e63-510302f25163`;
+            //console.log(urlDelete);
+            //console.log(urlObject);
+            //urlList.map(urlObject);
+            return urlObject;
+        });
+        console.log(allTasks);
+        
+        /*const response = await fetch(urlDelete, {
             method: 'DELETE',
             headers: {
                 'Content-Type': 'application/json'
@@ -74,20 +105,27 @@ const deleteData = async () => {
         });
         const data = await response.json();
         console.log(data);
-        return data;
+        return data;*/
     } catch(error) {
         console.log(error);
     };
 };
+deleteData();
 
 //EVENTLISTENER CLICK DELETE
-/*
-list.addEventListener('click', e => {
+taskList.addEventListener('click', e => {
+    //deleteData();
     if(e.target.classList.contains('delete')) {
-        e.target.parentElement.remove();
+        //e.target.parentNode.remove();
+        //console.log(`task ${e.target.previousSibling.innerText}`);
+        //alert(`task "${e.target.previousSibling.innerText}" has been removed`)
+        //const targetID = deleteData();
+        //console.log(targetID);
     };
+    //const idTask = e._id;
+    //console.log(idTask);
 });
-*/
+
 
 //EVENTLISTENER CLICK ADD BUTTON
 addBtn.addEventListener('click', e => {
@@ -102,10 +140,7 @@ addBtn.addEventListener('click', e => {
 });
 
 
-
-// ADD TO DOM
-
-//GET ARRAY
+//GET ARRAY & ADD TO DOM
 const getTasks = async () => {
     const allTasks = await getData();
 
@@ -113,7 +148,7 @@ const getTasks = async () => {
     allTasks.forEach(singleTask => {
         const taskDescription = singleTask.description;
         console.log(taskDescription);
-
+        
         //CREATING ELEMENTS
         const taskText = document.createElement('span');
         const liTask = document.createElement('li');
@@ -124,13 +159,13 @@ const getTasks = async () => {
         //ADDING CLASSES
         wrapper.className = "todo-wrapper";
         trashcan.className = 'far fa-trash-alt delete';
-        trashcan.className = 'far fa-trash-alt delete';
         liTask.className = "todo-item";
         taskText.className = "task-description";
 
         //ADDING CONTENT
         checkbox.type = 'checkbox';
         taskText.innerHTML = taskDescription;
+        trashcan.dataset.idTask = singleTask._id;
         
         //APPENDING ELEMENTS
         liTask.appendChild(taskText);
@@ -138,10 +173,25 @@ const getTasks = async () => {
         wrapper.appendChild(liTask);
         wrapper.appendChild(trashcan);
         taskList.appendChild(wrapper);
-
+        
+        /*
+        console.log(trashcan.dataset.idTask);
+        const endpointUrl = urlToDo + trashcan.dataset.idTask;
+        console.log(endpointUrl);
+        return endpointUrl;*/
     });
+    console.log(allTasks);
     return allTasks;
 };
 getTasks();
 
-
+/*
+const urlArray = async () => {
+    const urlList = await getData.map((singleUrl) => {
+        console.log(singleUrl._id);
+        return singleUrl._id;
+    })
+    console.log(urlList);
+}
+urlArray();
+*/
