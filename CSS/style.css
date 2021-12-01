@@ -107,6 +107,10 @@ li.todo-item{
 li.todo-item label {
     text-align: start;
 }
+
+span:hover {
+    color: #f91332;
+}
   
 .delete{
     cursor: pointer;
