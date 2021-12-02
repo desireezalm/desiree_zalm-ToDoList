@@ -126,7 +126,7 @@ const getTasks = async () => {
         const taskText = document.createElement('span');
         const liTask = document.createElement('li');
         const trashcan = document.createElement('i');        
-        const checkbox = document.createElement('input');        
+        const checkbox = document.createElement('input');
         const wrapper = document.createElement('div');
         
         //ADDING CLASSES
@@ -136,7 +136,7 @@ const getTasks = async () => {
         taskText.className = "task-description";
 
         //ADDING CONTENT
-        checkbox.type = 'checkbox';
+        checkbox.type = 'checkbox';       
         taskText.innerHTML = taskDescription;
         trashcan.dataset.idTask = singleTask._id;
         //console.log(trashcan.dataset);
@@ -147,6 +147,12 @@ const getTasks = async () => {
         wrapper.appendChild(liTask);
         wrapper.appendChild(trashcan);
         taskList.appendChild(wrapper);
+
+        checkbox.value = `${checkbox.nextSibling.firstChild.innerText}`;
+        checkbox.name = `task`;
+        checkbox.className = 'checkbox';
+        checkbox.checked = false;
+        
     });
     console.log(allTasks);
     return allTasks;
@@ -189,7 +195,15 @@ addBtn.addEventListener('click', e => {
     //window.location.reload();
 });
 
+// EVENTLISTENER CHECKBOX
+const checkboxes = document.querySelectorAll('.checkbox');
+console.log(checkboxes);
 
+checkboxes.forEach((checkbox) => {
+  checkbox.addEventListener('click', e => {
+    //e.target.nextSibling.firstChild.classList.add("checked");
+  });
+});
 
 // SEARCH BAR
 const filterTasks = (term) => {
