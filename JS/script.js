@@ -11,7 +11,6 @@ const removeBtn = document.querySelectorAll('.delete');
 const itemWrapper = document.querySelectorAll('.todo-wrapper');
 
 
-
 /* REQUESTS */
 
 // GET DATA
@@ -30,6 +29,7 @@ const getData = async () => {
         console.log(error);
     };
 };
+getData();
 
 // POST DATA
 const postData = async (descriptionString) => {
@@ -45,7 +45,7 @@ const postData = async (descriptionString) => {
             }
         });
         const data = await response.json();
-        console.log(data);
+        //console.log(data);
         return data;
     } catch(error) {
         console.log(error);
@@ -55,36 +55,29 @@ const postData = async (descriptionString) => {
 // DELETE DATA
 const deleteData = async (urlDelete) => {
     try {
-        console.log(urlDelete);
+        //console.log(urlDelete);
         const response = await fetch(urlDelete, {
             method: 'DELETE',
             headers: {
                 'Content-Type': 'application/json'
             }
         });
-        //const data = await response.json();
-        //console.log(data);
-        //return data;
-        getTasks();
+        
+        await clearDom();
+        await getTasks();
     } catch(error) {
         console.log(error);
     };
 };
 //deleteData();
 
+// EDIT DATA
+
+
+
 
 
 /* ARRAYS */
-
-// GET FULL ARRAY
-const getArray = async () => {
-    const data = await getData();
-    const arrayList = data.map((arrayItem) => {
-        return arrayItem;
-    });
-    return arrayList;
-};
-getArray();
 
 // GET ARRAY WITH ID'S
 const getIdArray = async () => {
@@ -111,16 +104,21 @@ const arrayUrl = await getUrlArray();
 const arrayIds = await getIdArray();
 //console.log(arrayIds);
 
+/*
+const getTasks = async () => {
 
+}
+*/
 
 //GET ARRAY & ADD TO DOM
 const getTasks = async () => {
-    const allTasks = await getData();
+    const allTasks = await getData();    
+    await clearDom();
 
     // ITERATE OVER ITEMS IN ARRAY
     allTasks.forEach(singleTask => {
         const taskDescription = singleTask.description;
-        console.log(taskDescription);
+        //console.log(taskDescription);
         
         //CREATING ELEMENTS
         const taskText = document.createElement('span');
@@ -128,10 +126,12 @@ const getTasks = async () => {
         const trashcan = document.createElement('i');        
         const checkbox = document.createElement('input');
         const wrapper = document.createElement('div');
+        const edit = document.createElement('i');
         
         //ADDING CLASSES
         wrapper.className = "todo-wrapper";
         trashcan.className = 'far fa-trash-alt delete';
+        edit.className = 'far fa-edit edit';
         liTask.className = "todo-item";
         taskText.className = "task-description";
 
@@ -139,12 +139,14 @@ const getTasks = async () => {
         checkbox.type = 'checkbox';       
         taskText.innerHTML = taskDescription;
         trashcan.dataset.idTask = singleTask._id;
+        edit.dataset.idTask = singleTask._id;
         //console.log(trashcan.dataset);
         
         //APPENDING ELEMENTS
         liTask.appendChild(taskText);
         wrapper.appendChild(checkbox);
         wrapper.appendChild(liTask);
+        wrapper.appendChild(edit);
         wrapper.appendChild(trashcan);
         taskList.appendChild(wrapper);
 
@@ -154,23 +156,27 @@ const getTasks = async () => {
         checkbox.checked = false;
         
     });
-    console.log(allTasks);
+    //console.log(allTasks);
     return allTasks;
 };
 getTasks();
+
+// CLEAR LIST IN DOM
+const clearDom = async () => {
+    while (taskList.firstChild) {
+        taskList.removeChild(taskList.firstChild);
+    }
+}
 
 
 
 /* EVENT LISTENERS */
 
 //EVENTLISTENER CLICK DELETE
-taskList.addEventListener('click', e => {
-    
+taskList.addEventListener('click', e => {    
     if(e.target.classList.contains('delete')) {
         const id = e.target.dataset.idTask;
         const url = urlToDo + id;
-        //console.log(url);
-        //console.log(id);
         if(arrayIds.includes(id)) {
             console.log(`Removed: task ${e.target.previousSibling.innerText}`);
             deleteData(url);
@@ -183,6 +189,38 @@ taskList.addEventListener('click', e => {
     };
 });
 
+
+//EVENTLISTENER CLICK EDIT
+taskList.addEventListener('click', e => {    
+    if(e.target.classList.contains('edit')) {
+        const id = e.target.dataset.idTask;
+        const url = urlToDo + id;
+        if(arrayIds.includes(id)) {
+            console.log(`Edit task: ${e.target.previousSibling.innerText}?`);
+            e.target.previousSibling.firstChild.classList.toggle('invisible');
+            //editData(url);
+        } else {
+            console.log(`Failure attempting to edit task: ${e.target.previousSibling.innerText}`);
+        };
+    };
+});
+
+
+// EVENTLISTENER CHECKBOX
+const checkboxEvent = async () => {  
+    await getTasks(); 
+    const checkboxes = document.querySelectorAll((`input[name="task"]`));
+
+    checkboxes.forEach((checkbox) => {        
+        checkbox.addEventListener('click', e => {
+            console.log("Task: " + e.target.nextSibling.firstChild.innerText);
+            
+            e.target.nextSibling.firstChild.classList.toggle('task-done');
+        });
+    });
+};
+checkboxEvent();
+
 // EVENTLISTENER CLICK ADD BUTTON
 addBtn.addEventListener('click', e => {
     //e.preventDefault();
@@ -193,16 +231,6 @@ addBtn.addEventListener('click', e => {
     form.reset();
     form.scrollIntoView({behavior: "smooth"});
     //window.location.reload();
-});
-
-// EVENTLISTENER CHECKBOX
-const checkboxes = document.querySelectorAll('.checkbox');
-console.log(checkboxes);
-
-checkboxes.forEach((checkbox) => {
-  checkbox.addEventListener('click', e => {
-    //e.target.nextSibling.firstChild.classList.add("checked");
-  });
 });
 
 // SEARCH BAR

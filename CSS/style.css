@@ -11,20 +11,20 @@ body{
   }
 
 .container{
-    width: 400px;
+    width: 500px;
     margin: auto;
     text-align: center;
   }
 
 header {    
-    width: 350px;
+    width: 450px;
     margin: auto;
 }
 
 h1 {
     font-weight: 200;
     font-size: 50px;
-    width: 325px;
+    width: 400px;
     margin: auto;
     text-align: center;
     text-transform: uppercase;
@@ -62,7 +62,8 @@ form ::placeholder {
 }
 
 ul.todo-list{
-    min-height: 300px;
+    min-height: 340px;
+    width: 450px;
     list-style-type: none;
 }
 
@@ -70,10 +71,12 @@ div.todo-wrapper {
     background: #222222;    
     border-bottom: 1px solid #555555;
     display: flexbox;
-    width: 12em;
-    margin-left: 0px;
+    width: 14em;
+    margin: 0px;
+    height: 3em;
     justify-content:flex-end;
-    align-items: flex-end;
+    align-items: center;
+    align-content: center;
     text-align: start;
 }
 
@@ -86,7 +89,9 @@ i {
     color: #dddddd;
     opacity: 95%;
     text-align: right;
+    align-self: flex-end;
     vertical-align: baseline;
+    padding: 5px;
 }
 
 i:hover {
@@ -99,13 +104,25 @@ li.todo-item{
     background: #222222;
     font-size: 0.9em;
     font-weight: 500;
-    width: 8.8em;
+    width: 10.5em;
+    height: 1em;
     padding: 0.8em 0.2em 0.8em 0.2em;
     text-align: start;
+    align-items: center;
+    align-content: center;
+    align-self: center;
 }
 
 li.todo-item label {
     text-align: start;
+}
+
+span.task-description.invisible{
+    display: none;
+}
+
+span.task-description.task-done {
+    text-decoration: line-through;
 }
 
 span:hover {
@@ -113,6 +130,10 @@ span:hover {
 }
   
 .delete{
+    cursor: pointer;
+}
+
+.edit{
     cursor: pointer;
 }
 
