@@ -8,10 +8,17 @@ const addBtn = document.querySelector('.add-button');
 const taskInput = document.querySelector('.add-input');
 const form = document.querySelector('.add-task');
 const removeBtn = document.querySelectorAll('.delete');
+const editBtn = document.querySelectorAll('.edit')
 const itemWrapper = document.querySelectorAll('.todo-wrapper');
 
+/*
+import { getData } from './api-client.js';
+import { postData } from './api-client.js';
+import { deleteData } from './api-client.js';
+*/
 
 /* REQUESTS */
+
 
 // GET DATA
 const getData = async () => {
@@ -30,6 +37,7 @@ const getData = async () => {
     };
 };
 getData();
+
 
 // POST DATA
 const postData = async (descriptionString) => {
@@ -52,11 +60,12 @@ const postData = async (descriptionString) => {
     };
 };
 
+
 // DELETE DATA
-const deleteData = async (urlDelete) => {
+const deleteData = async (urlId) => {
     try {
-        //console.log(urlDelete);
-        const response = await fetch(urlDelete, {
+        //console.log(urlId);
+        const response = await fetch(urlId, {
             method: 'DELETE',
             headers: {
                 'Content-Type': 'application/json'
@@ -71,8 +80,28 @@ const deleteData = async (urlDelete) => {
 };
 //deleteData();
 
-// EDIT DATA
 
+// EDIT DATA
+const putData = async (urlId, descriptionString) => {
+    try {
+        console.log(urlId);
+        const response = await fetch(urlId, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                description: descriptionString, 
+                done: false
+            })
+        });
+        
+        await clearDom();
+        await getTasks();
+    } catch(error) {
+        console.log(error);
+    };
+}
 
 
 
@@ -82,7 +111,7 @@ const deleteData = async (urlDelete) => {
 // GET ARRAY WITH ID'S
 const getIdArray = async () => {
     const data = await getData();
-    const arrayList = data.map((arrayItem) => {
+    const arrayList = await data.map((arrayItem) => {
         return arrayItem._id;
     });
     return arrayList;
@@ -104,11 +133,6 @@ const arrayUrl = await getUrlArray();
 const arrayIds = await getIdArray();
 //console.log(arrayIds);
 
-/*
-const getTasks = async () => {
-
-}
-*/
 
 //GET ARRAY & ADD TO DOM
 const getTasks = async () => {
@@ -127,6 +151,10 @@ const getTasks = async () => {
         const checkbox = document.createElement('input');
         const wrapper = document.createElement('div');
         const edit = document.createElement('i');
+        const editForm = document.createElement('form');
+        const editLabel = document.createElement('label');
+        const editText = document.createElement('input');
+        const editSubmit = document.createElement('input');
         
         //ADDING CLASSES
         wrapper.className = "todo-wrapper";
@@ -134,18 +162,29 @@ const getTasks = async () => {
         edit.className = 'far fa-edit edit';
         liTask.className = "todo-item";
         taskText.className = "task-description";
+        editForm.className = "edit-task";
+        editLabel.className = "edit-label";
+        editText.className = "edit-text";
+        editSubmit.className = "edit-submit";
 
         //ADDING CONTENT
         checkbox.type = 'checkbox';       
         taskText.innerHTML = taskDescription;
         trashcan.dataset.idTask = singleTask._id;
         edit.dataset.idTask = singleTask._id;
-        //console.log(trashcan.dataset);
+        editText.type = 'text';
+        editText.placeholder = "New description";
+        editSubmit.type = 'submit';
+        editSubmit.value = 'Edit task'
         
         //APPENDING ELEMENTS
+        editForm.appendChild(editLabel);
+        editForm.appendChild(editText);
+        editForm.appendChild(editSubmit);
         liTask.appendChild(taskText);
+        liTask.appendChild(editForm);        
         wrapper.appendChild(checkbox);
-        wrapper.appendChild(liTask);
+        wrapper.appendChild(liTask);        
         wrapper.appendChild(edit);
         wrapper.appendChild(trashcan);
         taskList.appendChild(wrapper);
@@ -169,10 +208,9 @@ const clearDom = async () => {
 }
 
 
-
 /* EVENT LISTENERS */
 
-//EVENTLISTENER CLICK DELETE
+//EVENTLISTENER CLICK DELETE ICON
 taskList.addEventListener('click', e => {    
     if(e.target.classList.contains('delete')) {
         const id = e.target.dataset.idTask;
@@ -189,22 +227,40 @@ taskList.addEventListener('click', e => {
     };
 });
 
+//EVENTLISTENER CLICK EDIT ICON
+taskList.addEventListener('click', e => {    
+    if(e.target.classList.contains('edit')) {
+        //const id = e.target.dataset.idTask;
+        const liText = e.target.previousSibling.firstChild;
+        const editForm = e.target.previousSibling.lastChild;
+        console.log(`Edit task: ${liText.innerHTML}?`);
+        liText.classList.toggle('invisible');
+        editForm.classList.toggle('visible');
+    };
+});
 
-//EVENTLISTENER CLICK EDIT
+// EVENTLISTENER SUBMIT EDIT
 taskList.addEventListener('click', e => {    
     if(e.target.classList.contains('edit')) {
         const id = e.target.dataset.idTask;
         const url = urlToDo + id;
+        const editDescription = form.elements[0].value;
+        const editTask = editDescription.trim();
+        //console.log(editDescription);
+        //console.log(editTask);
+        /*
+        console.log(newTask.trim());
+        form.reset();
+        form.scrollIntoView({behavior: "smooth"});
+        */
+
         if(arrayIds.includes(id)) {
-            console.log(`Edit task: ${e.target.previousSibling.innerText}?`);
-            e.target.previousSibling.firstChild.classList.toggle('invisible');
-            //editData(url);
+            //putData(url, editTask);
         } else {
             console.log(`Failure attempting to edit task: ${e.target.previousSibling.innerText}`);
         };
     };
 });
-
 
 // EVENTLISTENER CHECKBOX
 const checkboxEvent = async () => {  

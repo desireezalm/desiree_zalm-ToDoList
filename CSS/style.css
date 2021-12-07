@@ -70,14 +70,14 @@ ul.todo-list{
 div.todo-wrapper {
     background: #222222;    
     border-bottom: 1px solid #555555;
-    display: flexbox;
+    display: flex;
     width: 14em;
     margin: 0px;
     height: 3em;
     justify-content:flex-end;
     align-items: center;
     align-content: center;
-    text-align: start;
+    text-align: left;
 }
 
 input[type='checkbox'] {
@@ -89,14 +89,19 @@ i {
     color: #dddddd;
     opacity: 95%;
     text-align: right;
-    align-self: flex-end;
-    vertical-align: baseline;
-    padding: 5px;
+    vertical-align: center;
+    padding: 8px;
+    align-items: center;
+    align-content: center;
+    align-self: center;
 }
 
 i:hover {
     color: #f91332;
-    align-self: flex-end;
+}
+
+i.delete {
+    margin-right: 10px;
 }
 
 li.todo-item{
@@ -107,7 +112,7 @@ li.todo-item{
     width: 10.5em;
     height: 1em;
     padding: 0.8em 0.2em 0.8em 0.2em;
-    text-align: start;
+    text-align: left;
     align-items: center;
     align-content: center;
     align-self: center;
@@ -127,6 +132,55 @@ span.task-description.task-done {
 
 span:hover {
     color: #f91332;
+}
+
+form.edit-task {
+    text-align: center;
+    padding: 10px 0;
+    display: none;
+}
+
+form .edit-text {
+    padding: 10px 5px;
+    margin: 0 5px 0 0;
+    line-height: 16px;
+    height: 16px;
+}
+
+form .edit-text:focus {
+    outline-color: #f91332;
+    outline-width: 2px;
+    outline-style: auto;
+}
+
+form.edit-task.visible {
+    display: initial;
+}
+
+form .edit-submit {
+    text-decoration: none;
+    border: none;
+    padding: 10px 40px;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    height: 2.7em;
+    width: 5em;
+    background: rgba(0,0,0,0.5);
+    color: #f3f3f3;
+    opacity: 60%;
+}
+
+form .edit-submit:hover {
+    color: #f91332;
+    font-weight: 600;
+    background: rgba(0,0,0,0.8);
+}
+
+form .edit-submit:active {
+    box-shadow: 2px 2px 22px 2px rgba(0,0,0,0.2);
+    transform: scale(0.98);
 }
   
 .delete{
