@@ -8,7 +8,7 @@ const addBtn = document.querySelector('.add-button');
 const taskInput = document.querySelector('.add-input');
 const form = document.querySelector('.add-task');
 const removeBtn = document.querySelectorAll('.delete');
-const editBtn = document.querySelectorAll('.edit')
+const editBtn = document.querySelectorAll('.edit');
 const itemWrapper = document.querySelectorAll('.todo-wrapper');
 
 /*
@@ -103,6 +103,43 @@ const putData = async (urlId, descriptionString) => {
     };
 }
 
+const taskDone = async (urlId, descriptionString) => {
+    try {
+        console.log(urlId);
+        const response = await fetch(urlId, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ 
+                description: descriptionString, 
+                done: true
+            })
+        });
+    } catch(error) {
+        console.log(error);
+    };
+}
+
+const taskUndo = async (urlId, descriptionString) => {
+    try {
+        console.log(urlId);
+        const response = await fetch(urlId, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ 
+                description: descriptionString, 
+                done: false
+            })
+        });
+        await clearDom();
+        await getTasks();
+    } catch(error) {
+        console.log(error);
+    };
+}
 
 
 
@@ -129,10 +166,7 @@ const getUrlArray = async () => {
 getUrlArray();
 
 const arrayUrl = await getUrlArray();
-//console.log(arrayUrl);
 const arrayIds = await getIdArray();
-//console.log(arrayIds);
-
 
 //GET ARRAY & ADD TO DOM
 const getTasks = async () => {
@@ -195,7 +229,7 @@ const getTasks = async () => {
         checkbox.checked = false;
         
     });
-    //console.log(allTasks);
+    console.log(allTasks);
     return allTasks;
 };
 getTasks();
@@ -208,9 +242,10 @@ const clearDom = async () => {
 }
 
 
+
 /* EVENT LISTENERS */
 
-//EVENTLISTENER CLICK DELETE ICON
+// EVENTLISTENER CLICK DELETE ICON
 taskList.addEventListener('click', e => {    
     if(e.target.classList.contains('delete')) {
         const id = e.target.dataset.idTask;
@@ -227,10 +262,9 @@ taskList.addEventListener('click', e => {
     };
 });
 
-//EVENTLISTENER CLICK EDIT ICON
+// EVENTLISTENER CLICK EDIT ICON
 taskList.addEventListener('click', e => {    
     if(e.target.classList.contains('edit')) {
-        //const id = e.target.dataset.idTask;
         const liText = e.target.previousSibling.firstChild;
         const editForm = e.target.previousSibling.lastChild;
         console.log(`Edit task: ${liText.innerHTML}?`);
@@ -239,26 +273,18 @@ taskList.addEventListener('click', e => {
     };
 });
 
-// EVENTLISTENER SUBMIT EDIT
+// EVENTLISTENER SUBMIT EDITED TASK
 taskList.addEventListener('click', e => {    
-    if(e.target.classList.contains('edit')) {
-        const id = e.target.dataset.idTask;
+    if(e.target.classList.contains('edit-submit')) {
+        const editIcon = e.target.parentElement.parentElement.nextSibling;
+        const id = editIcon.dataset.idTask;
         const url = urlToDo + id;
-        const editDescription = form.elements[0].value;
+        const editForm = e.target.parentElement;
+        const editDescription = editForm.elements[0].value;
         const editTask = editDescription.trim();
-        //console.log(editDescription);
-        //console.log(editTask);
-        /*
-        console.log(newTask.trim());
-        form.reset();
-        form.scrollIntoView({behavior: "smooth"});
-        */
-
-        if(arrayIds.includes(id)) {
-            //putData(url, editTask);
-        } else {
-            console.log(`Failure attempting to edit task: ${e.target.previousSibling.innerText}`);
-        };
+        putData(url, editTask);
+        editForm.reset();
+        taskList.scrollIntoView({behavior: "smooth"});
     };
 });
 
@@ -270,8 +296,17 @@ const checkboxEvent = async () => {
     checkboxes.forEach((checkbox) => {        
         checkbox.addEventListener('click', e => {
             console.log("Task: " + e.target.nextSibling.firstChild.innerText);
-            
-            e.target.nextSibling.firstChild.classList.toggle('task-done');
+            const targetSpan = e.target.nextSibling.firstChild;
+            const taskId = e.target.parentElement.lastChild.dataset.idTask;
+            const urlId = urlToDo + taskId;
+            const description = targetSpan.innerText.trim();
+            if(targetSpan.classList.contains('task-done')) {
+                targetSpan.classList.remove('task-done');
+                taskUndo(urlId, description);
+            } else {
+                targetSpan.classList.add('task-done');
+                taskDone(urlId, description);
+            };
         });
     });
 };
