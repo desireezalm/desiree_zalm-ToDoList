@@ -1,3 +1,11 @@
+/* Een van de API requirements is mij niet gelukt: het zetten van de requests in een api-client.js file. Ik heb de file 
+wel bijgesloten, maar de link in mijn html file in comments gezet. Ik bleef foutmeldingen krijgen bij het aanroepen 
+van de requests in de script.js file, waardoor mijn code niet laadde. Vandaar dat ik de requests uiteindelijk ook in 
+mijn script.js file heb gezet. Ik hoor graag wat ik had kunnen doen om dit op te lossen. Ik heb zelf verschillende 
+dingen geprobeerd, o.a. gebruik maken van de keywords import & export (zie onder en in script.js), maar ook 
+daarbij bleef ik foutmeldingen krijgen. */
+
+
 /* REQUESTS */
 
 // GET DATA
