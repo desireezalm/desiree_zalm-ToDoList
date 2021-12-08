@@ -11,6 +11,10 @@ const removeBtn = document.querySelectorAll('.delete');
 const editBtn = document.querySelectorAll('.edit');
 const itemWrapper = document.querySelectorAll('.todo-wrapper');
 
+/* I have tried to use a different file for the requests, but I kept getting multiple error messages and my code refused
+to load. I also tried using export and import keywords, but I also kept getting error messages. Therefore I put the requests
+in this file, instead of the api-client.js file. */
+
 /*
 import { getData } from './api-client.js';
 import { postData } from './api-client.js';
@@ -105,7 +109,6 @@ const putData = async (urlId, descriptionString) => {
 
 const taskDone = async (urlId, descriptionString) => {
     try {
-        console.log(urlId);
         const response = await fetch(urlId, {
             method: 'PUT',
             headers: {
@@ -123,7 +126,6 @@ const taskDone = async (urlId, descriptionString) => {
 
 const taskUndo = async (urlId, descriptionString) => {
     try {
-        console.log(urlId);
         const response = await fetch(urlId, {
             method: 'PUT',
             headers: {
@@ -165,12 +167,25 @@ const getUrlArray = async () => {
 }
 getUrlArray();
 
+const getStatus = async () => {
+    const data = await getData();
+    const statusList = await data.map((taskStatus) => {
+        return taskStatus.done;
+    });
+    return statusList;
+}
+getStatus();
+
 const arrayUrl = await getUrlArray();
 const arrayIds = await getIdArray();
+const arrayStatus = await getStatus();
+console.log(arrayStatus);
+
+
 
 //GET ARRAY & ADD TO DOM
 const getTasks = async () => {
-    const allTasks = await getData();    
+    const allTasks = await getData();   
     await clearDom();
 
     // ITERATE OVER ITEMS IN ARRAY
@@ -191,15 +206,15 @@ const getTasks = async () => {
         const editSubmit = document.createElement('input');
         
         //ADDING CLASSES
-        wrapper.className = "todo-wrapper";
-        trashcan.className = 'far fa-trash-alt delete';
-        edit.className = 'far fa-edit edit';
-        liTask.className = "todo-item";
-        taskText.className = "task-description";
-        editForm.className = "edit-task";
-        editLabel.className = "edit-label";
-        editText.className = "edit-text";
-        editSubmit.className = "edit-submit";
+        wrapper.classList.add("todo-wrapper");
+        trashcan.className = "far fa-trash-alt delete";
+        edit.className = "far fa-edit edit";
+        liTask.classList.add("todo-item");
+        taskText.classList.add("task-description");
+        editForm.classList.add("edit-task");
+        editLabel.classList.add("edit-labe");
+        editText.classList.add("edit-text");
+        editSubmit.classList.add("edit-submit");
 
         //ADDING CONTENT
         checkbox.type = 'checkbox';       
@@ -225,12 +240,26 @@ const getTasks = async () => {
 
         checkbox.value = `${checkbox.nextSibling.firstChild.innerText}`;
         checkbox.name = `task`;
-        checkbox.className = 'checkbox';
-        checkbox.checked = false;
+        checkbox.className = 'checkbox';    
+        
         
     });
-    console.log(allTasks);
-    return allTasks;
+
+    // TASKS WHICH HAVE A PROPERTY OF DONE WILL BE SHOWN CROSSED OUT IN DOM AFTER RELOAD OF PAGE.
+    // FAILED: EITHER ALL ITEMS CROSSED OUT, NO ITEMS CROSSED OUT OR ONLY FIRST ITEM CROSSED OUT.
+    // I HAVE TRIED DIFFERENT VARIATIONS OF THIS CODE AT VARIOUS OTHER PLACES IN THIS FILE, WITHOUT CORRECT RESULTS.
+    // I ASKED A QUESTION ABOUT THIS IN SLACK, AND WAS TOLD THIS WAS NOT REQUIRED, AND WAS TOLD THIS WOULD BE ADDRESSED AT
+    // A LATER POINT. I WAS ALSO GIVEN VARIOUS TIPS, TO ACCOMPLISH THIS NOW, BUT I HAVEN'T GOTTEN IT TO WORK.
+    /*
+    arrayStatus.forEach((taskStatus) => {
+        const taskText = document.querySelector(".task-description");
+        if(taskStatus = false){            
+            taskText.classList.remove("task-done");
+        } else if(taskStatus = true){
+            taskText.classList.add("task-done");
+        };
+    });
+    */
 };
 getTasks();
 
@@ -239,9 +268,7 @@ const clearDom = async () => {
     while (taskList.firstChild) {
         taskList.removeChild(taskList.firstChild);
     }
-}
-
-
+};
 
 /* EVENT LISTENERS */
 
